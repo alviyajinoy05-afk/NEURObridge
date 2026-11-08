@@ -1,0 +1,484 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NeuroBridge — Real-Time Rehab</title>
+<style>
+:root{--g:#0b8b72;--g2:#08745f;--bg:#f4f8f7;--card:#fff;--ink:#17312c;--muted:#6f817d;--line:#dce8e4;--soft:#e7f5f1;--warn:#d99528;--red:#d65d5d}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:Arial,Helvetica,sans-serif}button{font:inherit;cursor:pointer}
+.sidebar{position:fixed;left:0;top:0;bottom:0;width:245px;background:#fff;border-right:1px solid var(--line);padding:22px 16px;z-index:20}.brand{display:flex;gap:10px;align-items:center;padding:5px 9px 30px}.logo{width:40px;height:40px;border-radius:13px;background:var(--g);color:#fff;display:grid;place-items:center;font-weight:800}.brand b{font-size:18px}.brand span{color:var(--g)}.nav{display:grid;gap:7px}.nav button{width:100%;border:0;background:transparent;color:var(--muted);padding:13px;border-radius:12px;text-align:left}.nav button.active,.nav button:hover{background:var(--soft);color:var(--g);font-weight:700}.privacy{position:absolute;bottom:20px;left:16px;right:16px;background:#f4faf8;border:1px solid var(--line);padding:13px;border-radius:12px;color:var(--muted);font-size:11px;line-height:1.5}
+.main{margin-left:245px;min-height:100vh}header{height:75px;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 30px;position:sticky;top:0;z-index:10}.page-head h1{font-size:20px;margin:0}.page-head p{font-size:12px;color:var(--muted);margin:4px 0}.profile{display:flex;gap:10px;align-items:center}.avatar{width:39px;height:39px;border-radius:50%;background:#dcefe9;color:var(--g);display:grid;place-items:center;font-weight:800}.content{padding:28px;max-width:1450px;margin:auto}.page{display:none}.page.active{display:block}.card{background:#fff;border:1px solid var(--line);border-radius:18px;padding:20px}.grid2{display:grid;grid-template-columns:1.25fr .75fr;gap:18px}.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:15px;margin:18px 0}.metric-label,.small{font-size:12px;color:var(--muted)}.metric{font-size:28px;font-weight:800;margin-top:7px}.green{color:var(--g)}.title{display:flex;justify-content:space-between;align-items:center;margin-bottom:17px}.title h2,.title h3{margin:0}.btn{border:0;border-radius:11px;padding:11px 16px;font-weight:700}.primary{background:var(--g);color:#fff}.primary:hover{background:var(--g2)}.secondary{background:#fff;border:1px solid var(--line);color:var(--g)}.danger{background:#fff1f1;color:#b54b4b;border:1px solid #f0cece}.hero{background:linear-gradient(135deg,#e4f5f0,#f8fcfb);border:1px solid var(--line);border-radius:23px;padding:30px;display:grid;grid-template-columns:1.2fr .8fr;gap:25px;align-items:center}.eyebrow{font-size:11px;color:var(--g);font-weight:800;letter-spacing:1.2px}.hero h2{font-size:39px;line-height:1.08;margin:10px 0}.hero p{color:var(--muted);line-height:1.65}.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px}.mock{height:230px;border-radius:20px;background:#193630;display:grid;place-items:center;position:relative;overflow:hidden}.rec{position:absolute;top:14px;left:14px;background:#0008;color:#fff;padding:7px 10px;border-radius:8px;font-size:11px;z-index:2}.dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#ff5959;margin-right:5px}.person{width:100px;height:180px;position:relative}.figure-head{width:40px;height:40px;background:#d7a37e;border-radius:50%;margin:auto}.body{position:absolute;top:44px;left:30px;width:40px;height:75px;background:#68bba8;border-radius:20px}.arm{position:absolute;top:57px;left:59px;width:77px;height:12px;background:#d7a37e;border-radius:10px;transform-origin:left center}.leg{position:absolute;top:110px;width:13px;height:65px;background:#4c8078;border-radius:10px}.leg1{left:32px}.leg2{left:54px}.progress{height:9px;background:#e7efec;border-radius:99px;overflow:hidden}.progress>div{height:100%;background:var(--g);border-radius:99px}.pill{font-size:10px;font-weight:800;border-radius:99px;padding:5px 8px;background:#e4f5ef;color:#087761}.pill.warn{background:#fff3df;color:#a36a13}.chart{height:210px;display:flex;align-items:end;gap:18px}.barwrap{height:100%;flex:1;display:flex;flex-direction:column;justify-content:end;align-items:center;gap:7px}.bar{width:34px;background:#84c8ba;border-radius:7px 7px 2px 2px;min-height:4px}.bar.current{background:var(--g)}.barlabel{font-size:11px;color:var(--muted)}.exercise{display:flex;justify-content:space-between;align-items:center;padding:13px 0;border-bottom:1px solid #edf2f0}.exercise-left{display:flex;align-items:center;gap:12px}.exercise-icon{width:39px;height:39px;border-radius:11px;background:var(--soft);color:var(--g);display:grid;place-items:center;font-size:19px}
+.session-grid{display:grid;grid-template-columns:1.2fr .8fr;gap:18px;align-items:start}.session-grid>div:last-child{display:flex;flex-direction:column;gap:0;overflow:hidden}.camera{position:relative;background:#142e29;border-radius:19px;overflow:hidden;min-height:520px}.camera video{display:block;width:100%;height:100%;min-height:520px;object-fit:contain;transform:scaleX(-1)}.camera canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}.angle{position:absolute;right:16px;bottom:16px;background:#fff;padding:13px 16px;border-radius:13px;z-index:3}.angle small{color:var(--muted)}.angle strong{display:block;font-size:29px;margin-top:3px}.camera-status{position:absolute;left:16px;top:48px;background:#0009;color:#fff;padding:9px 12px;border-radius:10px;font-size:11px;max-width:calc(100% - 32px);z-index:3}.rep{text-align:center}.circle{width:180px;height:180px;border-radius:50%;border:12px solid #dcece8;display:grid;place-items:center;margin:25px auto}.repnum{font-size:49px;font-weight:700}.feedback{padding:14px;border-radius:12px;background:#e5f6f1;color:#087761;font-weight:700;margin:12px 0}.feedback.warn{background:#fff3df;color:#9a6514}.controls{display:grid;grid-template-columns:1fr 1fr;gap:9px}.setting{display:grid;grid-template-columns:1fr 100px;align-items:center;gap:10px;margin:12px 0}.setting input{width:100%;padding:9px;border:1px solid var(--line);border-radius:8px}table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:12px 9px;border-bottom:1px solid #edf2f0;font-size:13px}th{color:var(--muted)}.flag{padding:13px;border-radius:10px;background:#fff7e8;border-left:4px solid var(--warn);font-size:12px;line-height:1.5;margin-bottom:10px}.flag.good{background:#eff9f6;border-left-color:var(--g)}.toast{display:none;position:fixed;right:25px;bottom:25px;background:#17312c;color:#fff;padding:13px 16px;border-radius:11px;z-index:100;font-size:13px}.toast.show{display:block}.modal{display:none;position:fixed;inset:0;background:#0007;z-index:200;align-items:center;justify-content:center;padding:20px}.modal.show{display:flex}.modalbox{background:#fff;border-radius:18px;padding:25px;width:min(500px,100%)}.modal-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:18px}
+@media(max-width:1000px){.sidebar{width:70px}.brand b,.nav span,.privacy{display:none}.main{margin-left:70px}.hero,.grid2,.session-grid{grid-template-columns:1fr}.metrics{grid-template-columns:repeat(2,1fr)}}@media(max-width:650px){header{padding:0 15px}.content{padding:15px}.metrics,.grid3{grid-template-columns:1fr}.hero h2{font-size:30px}.camera,.camera video{min-height:400px}}
+
+/* ---------- REAL-TIME REHAB UI ---------- */
+.exercise-guide{background:linear-gradient(145deg,#eef9f6,#f8fcfb);border:1px solid var(--line);border-radius:16px;padding:14px;margin-bottom:15px}.session-grid>div:last-child>*+*{margin-top:15px}.session-grid>div:last-child>.exercise-guide{margin-bottom:0}
+.exercise-guide h3{margin:0 0 5px}.exercise-guide .guide-grid{display:grid;grid-template-columns:150px 1fr;gap:14px;align-items:center}
+.exercise-svg{width:150px;height:150px;background:#fff;border:1px solid var(--line);border-radius:14px}
+.guide-points{display:grid;gap:7px;font-size:13px;color:var(--muted);line-height:1.35}
+.guide-points b{color:var(--ink)}
+.visibility{display:flex;align-items:center;gap:8px;margin-top:9px;font-size:13px;font-weight:700}
+.status-dot{width:9px;height:9px;border-radius:50%;background:#9aa8a5}.status-dot.ok{background:#20a77d}.status-dot.bad{background:#d65d5d}.status-dot.warn{background:#d99528}
+.live-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:12px}
+.live-stat{background:var(--soft);border-radius:12px;padding:10px}.live-stat b{display:block;font-size:18px}.live-stat span{font-size:11px;color:var(--muted)}
+.feedback.good{background:#e7f7f1;border-color:#bde8db}.feedback.bad{background:#fff0f0;border-color:#f1c2c2}.feedback.warn{background:#fff7e9;border-color:#efd49f}
+@media(max-width:900px){.exercise-guide .guide-grid{grid-template-columns:110px 1fr}.exercise-svg{width:110px;height:110px}}
+</style>
+</head>
+<body>
+
+<aside class="sidebar">
+<div class="brand"><div class="logo">N</div><b>Neuro<span>Bridge</span></b></div>
+<nav class="nav">
+<button type="button" data-page="home">🏠 <span>Overview</span></button>
+<button type="button" data-page="session">📷 <span>Exercise Session</span></button>
+<button type="button" data-page="progress">📈 <span>My Progress</span></button>
+<button type="button" data-page="clinician">👨‍⚕️ <span>Clinician Dashboard</span></button>
+</nav>
+<div class="privacy">🔒 <b>Privacy first</b><br><br>Camera processing is designed to happen locally in this prototype. Session numbers are stored in this browser.</div>
+</aside>
+
+<main class="main">
+<header>
+<div class="page-head"><h1 id="pageTitle">Good morning, Ravi</h1><p id="pageSub">Your home rehabilitation overview</p></div>
+<div class="profile"><div><b>Ravi</b><div class="small">Patient</div></div><div class="avatar">R</div></div>
+</header>
+
+<div class="content">
+
+<section id="home" class="page active">
+<div class="hero">
+<div><div class="eyebrow">HOME REHABILITATION • ARM RAISE</div><h2>Real-time movement guidance at home.</h2><p>Use the camera to detect your pose, calculate shoulder movement, count repetitions and receive immediate form feedback.</p><div class="actions"><button type="button" class="btn primary" data-action="start-session">Start today's session →</button><button type="button" class="btn secondary" data-action="progress">View progress</button></div></div>
+<div class="mock"><div class="rec"><span class="dot"></span> CAMERA READY</div><div class="person"><div class="figure-head"></div><div class="body"></div><div class="arm" style="transform:rotate(-42deg)"></div><div class="leg leg1"></div><div class="leg leg2"></div></div></div>
+</div>
+<div class="metrics">
+<div class="card"><div class="metric-label">Saved sessions</div><div class="metric" id="homeSessions">0</div><div class="small green">on this device</div></div>
+<div class="card"><div class="metric-label">Target angle</div><div class="metric" id="homeTarget">90°</div><div class="small green">clinician-set</div></div>
+<div class="card"><div class="metric-label">Last session</div><div class="metric" id="homeLast">—</div><div class="small green">repetitions</div></div>
+<div class="card"><div class="metric-label">Best ROM</div><div class="metric" id="homeRom">—</div><div class="small green">maximum angle</div></div>
+</div>
+<div class="grid2">
+<div class="card"><div class="title"><h3>Range-of-motion trend</h3><span class="small">Saved sessions</span></div><div id="homeChart" class="chart"></div></div>
+<div class="card"><div class="title"><h3>Today's plan</h3><span class="pill">READY</span></div><div class="exercise"><div class="exercise-left"><div class="exercise-icon">↥</div><div><b>Arm raise</b><div class="small"><span id="homePlanReps">10</span> repetitions • target <span id="homePlanAngle">90°</span></div></div></div></div><div class="small" style="margin-top:17px">Weekly goal</div><div class="progress" style="margin-top:8px"><div style="width:80%"></div></div><div class="small" style="margin-top:6px">4 of 5 sessions</div><button type="button" class="btn primary" style="width:100%;margin-top:17px" data-action="start-session">Begin exercise</button></div>
+</div>
+</section>
+
+<section id="session" class="page">
+<div class="title"><div><h2>Arm raise session</h2><div class="small">Target shoulder angle: <span id="targetLabel">90°</span> • Target reps: <span id="repTargetLabel">10</span></div></div><span id="livePill" class="pill">READY</span></div>
+<div class="session-grid">
+<div class="camera">
+<video id="video" playsinline autoplay muted></video><canvas id="canvas"></canvas>
+<div class="rec"><span class="dot"></span><span id="cameraText">CAMERA OFF</span></div>
+<div class="angle"><small>Shoulder angle</small><strong id="angle">—</strong></div>
+<div class="camera-status" id="cameraStatus">Press Start Camera.</div>
+</div>
+<div>
+<div class="exercise-guide">
+  <div class="guide-grid">
+    <svg class="exercise-svg" viewBox="0 0 150 150" aria-label="Arm raise exercise demonstration">
+      <rect x="0" y="0" width="150" height="150" rx="14" fill="#f7fbfa"/>
+      <circle cx="75" cy="29" r="12" fill="#d9ece7"/>
+      <path d="M75 42 L75 91 M75 55 L45 78 M75 55 L105 48 M75 91 L58 125 M75 91 L92 125" fill="none" stroke="#08745f" stroke-width="7" stroke-linecap="round"/>
+      <path d="M105 48 L127 25" fill="none" stroke="#0b8b72" stroke-width="7" stroke-linecap="round"/>
+      <path d="M119 27 A31 31 0 0 0 101 52" fill="none" stroke="#d99528" stroke-width="2.5"/>
+      <text x="106" y="20" font-size="10" fill="#17312c">90°</text>
+      <path d="M45 78 L32 95" fill="none" stroke="#b8d8d0" stroke-width="5" stroke-linecap="round"/>
+      <text x="10" y="141" font-size="9" fill="#6f817d">Raise arm smoothly</text>
+    </svg>
+    <div>
+      <h3>How to perform</h3>
+      <div class="guide-points">
+        <div>① <b>Stand sideways</b> to the camera.</div>
+        <div>② Keep your <b>shoulder, elbow, wrist and hip visible</b>.</div>
+        <div>③ Raise the arm smoothly toward the <b>clinician-set target</b>.</div>
+        <div>④ Lower the arm fully before the next repetition.</div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="card rep">
+<div class="small">REPETITIONS</div><div class="circle"><div class="repnum"><span id="reps">0</span><small style="font-size:16px;color:var(--muted)">/<span id="circleTarget">10</span></small></div></div>
+<div class="progress"><div id="repProgress" style="width:0%"></div></div>
+<div id="feedback" class="feedback">Press Start Camera to begin.</div>
+<div class="visibility"><span id="visibilityDot" class="status-dot"></span><span id="visibilityText">Waiting for camera</span></div>
+<div class="live-stats">
+  <div class="live-stat"><b id="correctReps">0</b><span>Correct reps</span></div>
+  <div class="live-stat"><b id="postureIssues">0</b><span>Posture issues</span></div>
+  <div class="live-stat"><b id="sessionTime">0:00</b><span>Session time</span></div>
+</div>
+<div class="controls"><button type="button" id="cameraBtn" class="btn primary">Start Camera</button><button type="button" id="resetBtn" class="btn secondary">Reset</button></div>
+<button type="button" id="saveBtn" class="btn secondary" style="width:100%;margin-top:9px">Finish & Save Session</button>
+</div>
+<div class="card" style="margin-top:15px"><div class="title"><h3>Exercise settings</h3><span class="small">Prototype</span></div><div class="setting"><span>Target angle</span><input id="targetInput" type="number" min="60" max="130"></div><div class="setting"><span>Target reps</span><input id="repInput" type="number" min="1" max="30"></div><button type="button" id="applyBtn" class="btn secondary" style="width:100%">Apply settings</button><div class="small" style="margin-top:12px;line-height:1.5">Camera analysis is a prototype form/trend aid, not a diagnostic measurement.</div></div>
+</div>
+</div>
+</section>
+
+<section id="progress" class="page">
+<div class="title"><div><h2>My progress</h2><div class="small">Saved locally in this browser</div></div><button type="button" class="btn primary" data-action="start-session">Start session</button></div>
+<div class="metrics">
+<div class="card"><div class="metric-label">Sessions</div><div class="metric" id="totalSessions">0</div></div>
+<div class="card"><div class="metric-label">Average reps</div><div class="metric" id="avgReps">0</div></div>
+<div class="card"><div class="metric-label">Target reached</div><div class="metric" id="targetReached">0%</div></div>
+<div class="card"><div class="metric-label">Best ROM</div><div class="metric" id="bestRom">—</div></div>
+</div>
+<div class="grid2">
+<div class="card"><div class="title"><h3>Session history</h3><button type="button" class="btn danger" id="clearBtn">Clear history</button></div><div style="overflow:auto"><table><thead><tr><th>Date</th><th>Reps</th><th>Max angle</th><th>Correct</th><th>Posture</th><th>Duration</th><th>Status</th></tr></thead><tbody id="history"></tbody></table></div></div>
+<div class="card"><div class="title"><h3>Trend</h3></div><div id="progressChart" class="chart"></div><p id="progressMsg" class="small"></p></div>
+</div>
+</section>
+
+<section id="clinician" class="page">
+<div class="title"><div><h2>Clinician dashboard</h2><div class="small">Review patient session numbers</div></div><span class="pill">HUMAN IN THE LOOP</span></div>
+<div class="grid3">
+<div class="card"><div class="profile"><div class="avatar">R</div><div><b>Ravi</b><div class="small">Right arm rehabilitation</div></div></div></div>
+<div class="card"><div class="metric-label">Sessions</div><div class="metric" id="clinSessions">0</div></div>
+<div class="card"><div class="metric-label">Best ROM</div><div class="metric" id="clinRom">—</div></div>
+</div>
+<div class="grid2" style="margin-top:18px">
+<div class="card"><div class="title"><h3>Patient ROM trend</h3></div><div id="clinChart" class="chart"></div></div>
+<div class="card"><div class="title"><h3>Flags to review</h3></div><div id="flags"></div><button type="button" class="btn primary" id="planBtn" style="width:100%">Review / update plan</button></div>
+</div>
+<div class="card" style="margin-top:18px"><div class="title"><h3>Current exercise plan</h3></div><table><thead><tr><th>Exercise</th><th>Reps</th><th>Target</th><th>Status</th></tr></thead><tbody><tr><td>Arm raise</td><td id="planReps">10</td><td id="planAngle">90°</td><td><span class="pill">Active</span></td></tr></tbody></table></div>
+</section>
+
+</div>
+</main>
+
+<div id="toast" class="toast"></div>
+
+<div id="modal" class="modal"><div class="modalbox"><h3>Update exercise plan</h3><div class="setting"><span>Target angle</span><input id="modalAngle" type="number" min="60" max="130"></div><div class="setting"><span>Target reps</span><input id="modalReps" type="number" min="1" max="30"></div><div class="modal-actions"><button type="button" class="btn secondary" id="cancelModal">Cancel</button><button type="button" class="btn primary" id="savePlan">Save plan</button></div></div></div>
+
+<script>
+/* ================= NEUROBRIDGE REAL-TIME ENGINE ================= */
+var state={
+  targetAngle:Number(localStorage.getItem("nb_target_angle")||90),
+  repTarget:Number(localStorage.getItem("nb_rep_target")||10),
+  reps:0, correctReps:0, postureIssues:0, maxAngle:0, angleSum:0, angleSamples:0,
+  phase:"down", running:false, stream:null, landmarker:null, raf:null, startTime:null,
+  lastVideoTime:-1, lastIssueAt:0, legacyPose:null, legacyBusy:false
+};
+
+var titles={
+ home:["Good morning, Ravi","Your home rehabilitation overview"],
+ session:["Exercise Session","Real-time camera-based movement guidance"],
+ progress:["My Progress","Saved session numbers and trends"],
+ clinician:["Clinician Dashboard","Review trends, flags and exercise plan"]
+};
+function $(id){return document.getElementById(id)}
+function toast(msg){var el=$("toast");el.textContent=msg;el.classList.add("show");clearTimeout(window.__toast);window.__toast=setTimeout(function(){el.classList.remove("show")},2300)}
+function showPage(page){
+  document.querySelectorAll(".page").forEach(function(p){p.classList.remove("active")});
+  var target=$(page);if(!target)return;target.classList.add("active");
+  document.querySelectorAll(".nav button").forEach(function(b){b.classList.toggle("active",b.getAttribute("data-page")===page)});
+  $("pageTitle").textContent=titles[page][0];$("pageSub").textContent=titles[page][1];
+  if(page==="progress"||page==="clinician"||page==="home")render();
+  window.scrollTo(0,0);
+}
+document.querySelectorAll(".nav button").forEach(function(btn){btn.addEventListener("click",function(){showPage(btn.getAttribute("data-page"))})});
+document.querySelectorAll("[data-action='start-session']").forEach(function(btn){btn.addEventListener("click",function(){showPage("session")})});
+document.querySelectorAll("[data-action='progress']").forEach(function(btn){btn.addEventListener("click",function(){showPage("progress")})});
+
+/* ---------- LOCAL STORAGE ---------- */
+function sessions(){try{return JSON.parse(localStorage.getItem("neurobridge_sessions")||"[]")}catch(e){return[]}}
+function saveSessions(a){localStorage.setItem("neurobridge_sessions",JSON.stringify(a))}
+function shortDate(s){var d=new Date(s);return isNaN(d.getTime())?"—":d.toLocaleDateString(undefined,{day:"2-digit",month:"short"})}
+function duration(sec){if(!sec)return"0:00";return Math.floor(sec/60)+":"+String(sec%60).padStart(2,"0")}
+function updateTimer(){
+  if(!state.running||!state.startTime)return;
+  $("sessionTime").textContent=duration(Math.round((Date.now()-state.startTime)/1000));
+  state.timer= setTimeout(updateTimer,1000);
+}
+
+/* ---------- SETTINGS ---------- */
+function syncSettings(){
+  $("targetInput").value=state.targetAngle;$("repInput").value=state.repTarget;
+  $("targetLabel").textContent=state.targetAngle+"°";$("repTargetLabel").textContent=state.repTarget;
+  $("circleTarget").textContent=state.repTarget;$("homeTarget").textContent=state.targetAngle+"°";
+  $("homePlanAngle").textContent=state.targetAngle+"°";$("homePlanReps").textContent=state.repTarget;
+  $("planAngle").textContent=state.targetAngle+"°";$("planReps").textContent=state.repTarget;
+}
+function setPlan(angle,reps){
+  state.targetAngle=Math.max(60,Math.min(130,Number(angle)||90));
+  state.repTarget=Math.max(1,Math.min(30,Number(reps)||10));
+  localStorage.setItem("nb_target_angle",state.targetAngle);localStorage.setItem("nb_rep_target",state.repTarget);syncSettings();
+}
+$("applyBtn").addEventListener("click",function(){setPlan($("targetInput").value,$("repInput").value);toast("Exercise plan updated")});
+
+/* ---------- MEDIAPIPE ---------- */
+async function loadMediaPipe(){
+  if(state.landmarker || state.legacyPose) return state.landmarker || state.legacyPose;
+  $("feedback").textContent="Loading real-time pose tracking…";
+  $("cameraStatus").textContent="Loading pose engine…";
+
+  // First try the classic MediaPipe Pose solution. It avoids the ES-module/WASM
+  // loading path that can fail in some desktop browsers and local environments.
+  async function loadScript(url){
+    return new Promise(function(resolve,reject){
+      var sc=document.createElement("script");
+      sc.src=url;sc.async=true;sc.crossOrigin="anonymous";
+      sc.onload=function(){resolve()};sc.onerror=function(){reject(new Error("Could not load "+url))};
+      document.head.appendChild(sc);
+    });
+  }
+  // Use classic MediaPipe Pose (UMD build) via jsdelivr only.
+  var base="https://cdn.jsdelivr.net/npm/@mediapipe/pose@0.5.1675469404/";
+  try{
+    if(!window.Pose) await loadScript(base+"pose.js");
+    if(window.Pose){
+      var pose=new window.Pose({locateFile:function(file){return base+file;}});
+      pose.setOptions({modelComplexity:1,smoothLandmarks:true,enableSegmentation:false,
+        minDetectionConfidence:.5,minTrackingConfidence:.5});
+      pose.onResults(function(results){
+        state.legacyBusy=false;
+        processPose({landmarks:results.poseLandmarks?[results.poseLandmarks]:[]});
+      });
+      state.legacyPose=pose;
+      $("cameraStatus").textContent="Pose tracking ready.";
+      return pose;
+    }
+  }catch(e){
+    console.warn("Classic MediaPipe Pose failed:",e);
+  }
+  // If Pose still not available, surface a clear message.
+  $("feedback").textContent="⚠ Pose tracking model could not load. Check your internet connection and try again.";
+  $("feedback").className="feedback warn";
+  $("cameraStatus").textContent="Camera works; pose engine did not load. Check internet connection.";
+  throw new Error("Pose engine unavailable");
+}
+$("cameraBtn").addEventListener("click",async function(){if(state.running)stopCamera();else await startCamera()});
+
+async function startCamera(){
+  // Start the webcam FIRST. Loading the pose model must not prevent the camera from opening.
+  try{
+    if(!window.isSecureContext)
+      throw new Error("Camera requires a secure context (HTTPS). Please open this page over HTTPS.");
+    if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia)
+      throw new Error("Camera API unavailable. Please use Chrome or Edge.");
+
+    $("cameraStatus").textContent="Requesting camera permission…";
+    var constraints={video:{width:{ideal:640},height:{ideal:480},aspectRatio:{ideal:4/3},facingMode:{ideal:"user"}},audio:false};
+    try{
+      state.stream=await navigator.mediaDevices.getUserMedia(constraints);
+    }catch(firstErr){
+      // Some desktop webcams reject facingMode/advanced constraints. Retry with the simplest request.
+      console.warn("Camera constraints failed; retrying basic webcam:",firstErr);
+      state.stream=await navigator.mediaDevices.getUserMedia({video:true,audio:false});
+    }
+
+    $("video").srcObject=state.stream;
+    await new Promise(function(resolve){
+      if($("video").readyState>=1) resolve();
+      else $("video").onloadedmetadata=resolve;
+    });
+    await $("video").play();
+    resetMetrics(false);state.running=true;state.startTime=Date.now();state.lastVideoTime=-1;
+    $("cameraBtn").textContent="Stop Camera";$("livePill").textContent="LIVE";$("cameraText").textContent="CAMERA LIVE";
+    $("cameraStatus").textContent="Camera is working. Loading pose tracking…";
+    $("feedback").textContent="Camera connected. Loading posture tracking…";
+    $("feedback").className="feedback";setVisibility("warn","Camera connected");
+    resizeCanvas();updateTimer();
+
+    // Pose model loads after the camera is already visible.
+    try{
+      await loadMediaPipe();
+      $("cameraStatus").textContent="Checking body visibility…";
+      $("feedback").textContent="Ready. Stand sideways and keep your full arm visible.";
+      setVisibility("warn","Position yourself in the frame.");
+      detect();toast("Camera + pose tracking started");
+    }catch(modelErr){
+      console.error("Pose model error:",modelErr);
+      $("cameraStatus").textContent="Camera works, but pose tracking is not loaded.";
+      var em=String(modelErr&&modelErr.message||modelErr||"");
+      if(em.indexOf("FILE_MODE")===0){
+        $("feedback").textContent="⚠ Pose model could not load. Ensure internet is enabled and try again.";
+      }else{
+        $("feedback").textContent="⚠ Pose model could not load. Check internet access, then press Reset and Start Camera again.";
+      }
+      $("feedback").className="feedback warn";
+      // Keep camera running so the user can see that the webcam itself is fine.
+    }
+  }catch(e){
+    console.error("Camera start error:",e);
+    if(state.stream)state.stream.getTracks().forEach(function(t){t.stop()});
+    state.stream=null;state.running=false;
+    $("cameraBtn").textContent="Start Camera";$("cameraText").textContent="CAMERA ERROR";
+    var msg="Could not start camera.";
+    if(e.name==="NotAllowedError" || e.name==="PermissionDeniedError") msg="Camera permission was denied. Click the camera/lock icon in the browser address bar and allow Camera, then try again.";
+    else if(e.name==="NotFoundError") msg="No camera was found. Connect a webcam and try again.";
+    else if(e.name==="NotReadableError" || e.name==="AbortError") msg="The camera is busy in another app. Close Zoom/Teams/Camera and try again.";
+    else if(e.message) msg=e.message;
+    $("cameraStatus").textContent=msg;
+    $("feedback").textContent=msg;
+    $("feedback").className="feedback warn";
+  }
+}
+function stopCamera(){
+  state.running=false;if(state.raf)cancelAnimationFrame(state.raf);if(state.timer)clearTimeout(state.timer);
+  if(state.stream)state.stream.getTracks().forEach(function(t){t.stop()});state.stream=null;$("video").srcObject=null;
+  $("cameraBtn").textContent="Start Camera";$("livePill").textContent="READY";$("cameraText").textContent="CAMERA OFF";
+  $("cameraStatus").textContent="Camera stopped.";$("angle").textContent="—";setVisibility("bad","Camera off");
+  var c=$("canvas").getContext("2d");c.clearRect(0,0,$("canvas").width,$("canvas").height);
+}
+function resizeCanvas(){var v=$("video");if(v.videoWidth){$("canvas").width=v.videoWidth;$("canvas").height=v.videoHeight}}
+window.addEventListener("resize",resizeCanvas);
+function visible(p){return p&&(p.visibility===undefined||p.visibility>.45)}
+function calcAngle(a,b,c){
+  var abx=a.x-b.x,aby=a.y-b.y,cbx=c.x-b.x,cby=c.y-b.y,mag=Math.hypot(abx,aby)*Math.hypot(cbx,cby);
+  if(!mag)return 0;var x=(abx*cbx+aby*cby)/mag;x=Math.max(-1,Math.min(1,x));return Math.round(Math.acos(x)*180/Math.PI)
+}
+function torsoTilt(shoulder,hip){
+  var dx=shoulder.x-hip.x,dy=hip.y-shoulder.y;
+  return Math.abs(Math.atan2(dx,dy)*180/Math.PI);
+}
+function setVisibility(type,msg){
+  var d=$("visibilityDot");d.className="status-dot "+type;$("visibilityText").textContent=msg;
+}
+function detect(){
+  if(!state.running)return;var v=$("video");
+  if(v.readyState>=2&&v.currentTime!==state.lastVideoTime){
+    state.lastVideoTime=v.currentTime;
+    try{
+      if(state.legacyPose){
+        if(!state.legacyBusy){
+          state.legacyBusy=true;
+          state.legacyPose.send({image:v}).catch(function(e){state.legacyBusy=false;console.error(e)});
+        }
+      }else if(state.landmarker){
+        processPose(state.landmarker.detectForVideo(v,performance.now()));
+      }
+    }catch(e){console.error(e)}
+  }
+  state.raf=requestAnimationFrame(detect);
+}
+function processPose(result){
+  var ctx=$("canvas").getContext("2d");ctx.clearRect(0,0,$("canvas").width,$("canvas").height);
+  if(!result.landmarks||!result.landmarks.length){
+    $("angle").textContent="—";setVisibility("bad","Patient not visible");
+    $("cameraStatus").textContent="No person detected. Step back and keep your upper body in frame.";
+    $("feedback").textContent="⚠ Patient not detected — move into the camera frame.";
+    $("feedback").className="feedback warn";return;
+  }
+  var lm=result.landmarks[0],r={shoulder:lm[12],elbow:lm[14],wrist:lm[16],hip:lm[24]},l={shoulder:lm[11],elbow:lm[13],wrist:lm[15],hip:lm[23]};
+  // For arm-raise detection we only require shoulder + elbow + wrist.
+  // Hip is optional, because many users will frame only their upper body.
+  var rc=[r.shoulder,r.elbow,r.wrist].filter(visible).length,lc=[l.shoulder,l.elbow,l.wrist].filter(visible).length;
+  var side=rc>=lc?r:l,required=[side.shoulder,side.elbow,side.wrist];
+  if(required.filter(visible).length<3){
+    draw(lm);$("angle").textContent="—";setVisibility("warn","Arm partly visible");
+    $("cameraStatus").textContent="Shoulder, elbow and wrist are required.";
+    $("feedback").textContent="⚠ Keep your shoulder, elbow and wrist visible.";
+    $("feedback").className="feedback warn";return;
+  }
+  // Shoulder elevation: angle of the shoulder-to-wrist line from the
+  // vertical-down direction. This works even when the hip is outside frame.
+  var dx=side.wrist.x-side.shoulder.x,dy=side.wrist.y-side.shoulder.y;
+  var angle=Math.round(Math.atan2(Math.abs(dx),Math.max(0.0001,Math.abs(dy)))*180/Math.PI);
+  // If the wrist is above the shoulder, convert to the corresponding
+  // elevation angle (90° = shoulder height, 180° = overhead).
+  if(dy<0) angle=180-angle;
+  var tilt=(visible(side.hip)?torsoTilt(side.shoulder,side.hip):0);
+  state.maxAngle=Math.max(state.maxAngle,angle);state.angleSum+=angle;state.angleSamples++;
+  $("angle").textContent=angle+"°";draw(lm);setVisibility("ok","Patient + arm detected");
+  $("cameraStatus").textContent="Tracking posture in real time.";
+  var postureGood=tilt<=15;
+  if(!postureGood){
+    if(Date.now()-state.lastIssueAt>1000){state.postureIssues++;state.lastIssueAt=Date.now();$("postureIssues").textContent=state.postureIssues}
+    $("feedback").textContent="Keep your torso upright — avoid leaning.";
+    $("feedback").className="feedback bad";
+  }else{
+    repLogic(angle);
+  }
+}
+function draw(lm){
+  var ctx=$("canvas").getContext("2d"),w=$("canvas").width,h=$("canvas").height,pairs=[[11,12],[11,13],[13,15],[12,14],[14,16],[11,23],[12,24],[23,24]];
+  ctx.save();
+  // Mirror the canvas context to match the CSS-mirrored video
+  ctx.translate(w,0);ctx.scale(-1,1);
+  ctx.lineWidth=5;ctx.strokeStyle="#48d5bb";ctx.fillStyle="#fff";
+  pairs.forEach(function(pair){var a=lm[pair[0]],b=lm[pair[1]];if(!visible(a)||!visible(b))return;ctx.beginPath();ctx.moveTo(a.x*w,a.y*h);ctx.lineTo(b.x*w,b.y*h);ctx.stroke()});
+  lm.forEach(function(p){if(!visible(p))return;ctx.beginPath();ctx.arc(p.x*w,p.y*h,5,0,Math.PI*2);ctx.fill()});
+  ctx.restore();
+}
+function repLogic(angle){
+  var top=state.targetAngle-5,bottom=45;
+  if(state.phase==="down"){
+    if(angle>=top){
+      state.phase="up";state.reps++;state.correctReps++;
+      $("reps").textContent=state.reps;$("correctReps").textContent=state.correctReps;
+      $("repProgress").style.width=Math.min(100,state.reps/state.repTarget*100)+"%";
+      $("feedback").textContent=state.reps>=state.repTarget?"✓ Target completed. Finish and save when ready.":"✓ Good rep "+state.reps+". Lower slowly.";
+      $("feedback").className="feedback good";
+    }else if(angle>=state.targetAngle-15){
+      $("feedback").textContent="Almost there — lift a little higher."; $("feedback").className="feedback";
+    }else{
+      $("feedback").textContent="Lift your arm toward "+state.targetAngle+"°."; $("feedback").className="feedback";
+    }
+  }else if(state.phase==="up"&&angle<=bottom){state.phase="down";$("feedback").textContent="Ready for the next repetition.";$("feedback").className="feedback"}
+}
+function resetMetrics(keepRunning){
+  state.reps=0;state.correctReps=0;state.postureIssues=0;state.maxAngle=0;state.angleSum=0;state.angleSamples=0;state.phase="down";state.lastIssueAt=0;
+  $("reps").textContent="0";$("correctReps").textContent="0";$("postureIssues").textContent="0";$("repProgress").style.width="0%";$("angle").textContent="—";$("sessionTime").textContent="0:00";
+  if(!keepRunning)$("feedback").textContent="Press Start Camera to begin.";
+}
+$("resetBtn").addEventListener("click",function(){var was=state.running;resetMetrics(was);if(was)state.startTime=Date.now();$("feedback").textContent=was?"Ready. Stand sideways and keep your arm visible.":"Press Start Camera to begin.";toast("Session reset")});
+
+/* ---------- SAVE SESSION DATA ---------- */
+$("saveBtn").addEventListener("click",function(){
+  if(state.reps<1){toast("Complete at least one repetition first");return}
+  var sec=state.startTime?Math.round((Date.now()-state.startTime)/1000):0;
+  var data=sessions();
+  data.unshift({
+    sessionId:"NB-"+Date.now(),date:new Date().toISOString(),exercise:"Shoulder / Arm Raise",
+    targetAngle:state.targetAngle,target:state.repTarget,reps:state.reps,correctReps:state.correctReps,
+    postureIssues:state.postureIssues,maxAngle:Math.round(state.maxAngle),
+    averageAngle:state.angleSamples?Math.round(state.angleSum/state.angleSamples):0,duration:sec
+  });
+  saveSessions(data.slice(0,50));stopCamera();render();showPage("progress");toast("Session saved locally");
+});
+
+/* ---------- PROGRESS / CLINICIAN ---------- */
+function render(){
+  var data=sessions();$("homeSessions").textContent=data.length;$("totalSessions").textContent=data.length;$("clinSessions").textContent=data.length;
+  if(data.length){
+    var avg=data.reduce(function(a,x){return a+x.reps},0)/data.length,best=Math.max.apply(null,data.map(function(x){return x.maxAngle||0}));
+    var reached=data.filter(function(x){return x.reps>=x.target}).length/data.length*100;
+    $("avgReps").textContent=avg.toFixed(1);$("bestRom").textContent=best+"°";$("clinRom").textContent=best+"°";$("targetReached").textContent=Math.round(reached)+"%";
+    $("homeLast").textContent=data[0].reps+"/"+data[0].target;$("homeRom").textContent=(data[0].maxAngle||0)+"°";
+    $("history").innerHTML=data.map(function(x){
+      return "<tr><td>"+shortDate(x.date)+"</td><td>"+x.reps+"/"+x.target+"</td><td>"+(x.maxAngle||0)+"°</td><td>"+(x.correctReps||0)+"</td><td>"+(x.postureIssues||0)+"</td><td>"+duration(x.duration)+"</td><td><span class='pill "+(x.reps>=x.target?"":"warn")+"'>"+(x.reps>=x.target?"Complete":"Partial")+"</span></td></tr>"
+    }).join("");
+    $("progressMsg").textContent="Latest session: "+data[0].reps+"/"+data[0].target+" reps, max angle "+(data[0].maxAngle||0)+"°, posture issues "+(data[0].postureIssues||0)+".";
+  }else{
+    $("avgReps").textContent="0";$("bestRom").textContent="—";$("clinRom").textContent="—";$("targetReached").textContent="0%";$("homeLast").textContent="—";$("homeRom").textContent="—";
+    $("history").innerHTML="<tr><td colspan='7' class='small'>No sessions saved yet.</td></tr>";$("progressMsg").textContent="Complete a session to create your trend.";
+  }
+  drawBars("homeChart",data.slice(0,7).reverse());drawBars("progressChart",data.slice(0,10).reverse());drawBars("clinChart",data.slice(0,10).reverse());
+  var flags=[];
+  if(!data.length)flags.push("<div class='flag good'>No session flags yet.</div>");
+  else{
+    if(data[0].reps<data[0].target)flags.push("<div class='flag'><b>Incomplete session</b><br>"+data[0].reps+"/"+data[0].target+" repetitions.</div>");
+    if((data[0].maxAngle||0)<state.targetAngle-10)flags.push("<div class='flag'><b>Range-of-motion flag</b><br>Maximum angle: "+(data[0].maxAngle||0)+"°.</div>");
+    if((data[0].postureIssues||0)>2)flags.push("<div class='flag'><b>Posture flag</b><br>"+data[0].postureIssues+" posture issues detected.</div>");
+    if(!flags.length)flags.push("<div class='flag good'><b>No automatic flags</b><br>Recent prototype metrics are within configured thresholds.</div>");
+  }
+  $("flags").innerHTML=flags.join("");
+}
+function drawBars(id,data){
+  var el=$(id);if(!el)return;if(!data.length){el.innerHTML="<div class='small' style='margin:auto'>No data yet.</div>";return}
+  el.innerHTML=data.map(function(x,i){var h=Math.max(8,Math.min(100,(x.maxAngle||0)/130*100));return "<div class='barwrap'><div class='bar "+(i===data.length-1?"current":"")+"' style='height:"+h+"%'></div><div class='barlabel'>"+shortDate(x.date)+"</div></div>"}).join("");
+}
+$("clearBtn").addEventListener("click",function(){if(confirm("Delete all saved session numbers from this browser?")){localStorage.removeItem("neurobridge_sessions");render();toast("History cleared")}});
+
+/* ---------- CLINICIAN PLAN ---------- */
+$("planBtn").addEventListener("click",function(){$("modalAngle").value=state.targetAngle;$("modalReps").value=state.repTarget;$("modal").classList.add("show")});
+$("cancelModal").addEventListener("click",function(){$("modal").classList.remove("show")});
+$("savePlan").addEventListener("click",function(){setPlan($("modalAngle").value,$("modalReps").value);$("modal").classList.remove("show");toast("Clinician plan saved")});
+
+syncSettings();render();
+// Set initial active nav button
+document.querySelector(".nav button[data-page='home']").classList.add("active");
+</script>
+</body>
+</html>
